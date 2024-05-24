@@ -60,31 +60,38 @@ class GFG {
 
 
 
+
+
 class Solution {
-    private static final int MOD = 1_000_000_007;
-
-    public static int countPartitions(int n, int d,int[] arr) {
-        int totalSum = Arrays.stream(arr).sum();
-        
-        // Check if (totalSum + d) is even and possible
-        if ((totalSum + d) % 2 != 0) return 0;
-
-        int targetSum = (totalSum + d) / 2;
-
-        return countSubsetSum(arr, n, targetSum);
+    static int mod = 1000000007;
+    public static int countPartitions(int n, int d, int[] arr) {
+        // code here
+        int sum = 0;
+        for(int i = 0; i < n; i++) sum += arr[i];
+        if( (sum - d) % 2 != 0) return 0;
+        int a = (sum + d)/2 ;
+    
+        Arrays.sort(arr);
+        int[][] dp = new int [n+1][a+1];
+        for(int i=0;i<n;i++) Arrays.fill(dp[i],-1);
+         return countSubsetEqualSum(arr,0, a,dp);
+      
     }
+    private static int countSubsetEqualSum(int[] arr,int index, int target,int[][] dp){
+        
+       if(index >= arr.length ){
+           if(target == 0) return 1;
+           return 0;
+       } 
+       if(dp[index][target] != -1 ) return dp[index][target];
 
-    private static int countSubsetSum(int[] arr, int n, int target) {
-        int[] dp = new int[target + 1];
-        dp[0] = 1; // There is one way to get sum 0, by choosing no elements
-
-        for (int num : arr) {
-            for (int j = target; j >= num; j--) {
-                dp[j] = (dp[j] + dp[j - num]) % MOD;
-            }
+        dp[index][target] = countSubsetEqualSum(arr,index+1, target, dp ); // doesnt choose this index's element
+        if(target - arr[index] >= 0){
+           dp[index][target] +=  countSubsetEqualSum(arr,index+1, target - arr[index], dp);
+           dp[index][target] %= mod;
         }
-
-        return dp[target];
+       
+        return dp[index][target];
     }
 }
         
