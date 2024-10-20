@@ -1,81 +1,105 @@
 //{ Driver Code Starts
-//Initial Template for Java
+// Initial Template for Java
+
 import java.io.*;
 import java.util.*;
 
-class Node {
+class DLLNode {
     int data;
-    Node next, prev;
+    DLLNode next;
+    DLLNode prev;
 
-    Node(int key) {
-        data = key;
+    DLLNode(int val) {
+        data = val;
         next = null;
         prev = null;
     }
 }
 
-public class GFG {
-    public static void main(String args[]) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        PrintWriter out = new PrintWriter(System.out);
-        int t = Integer.parseInt(in.readLine());
+public class Main {
+    public static void push(DLLNode tail, int new_data) {
+        DLLNode newNode = new DLLNode(new_data);
+        newNode.next = null;
+        newNode.prev = tail;
+
+        if (tail != null) {
+            tail.next = newNode;
+        }
+    }
+
+    public static void printList(DLLNode head) {
+        if (head == null) {
+            return;
+        }
+
+        while (head != null) {
+            System.out.print(head.data + " ");
+            head = head.next;
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int t = Integer.parseInt(br.readLine().trim());
 
         while (t-- > 0) {
-            int n = Integer.parseInt(in.readLine().trim());
-            int k = Integer.parseInt(in.readLine().trim());
-            String s[] = in.readLine().trim().split(" ");
-            Node head = new Node(Integer.parseInt(s[0]));
-            Node tail = head;
-            for (int i = 1; i < n; i++) {
-                Node temp = new Node(Integer.parseInt(s[i]));
-                tail.next = temp;
-                temp.prev = tail;
-                tail = temp;
-            }
-            Solution ob = new Solution();
-            Node ans = ob.sortAKSortedDLL(head, k);
-            Node temp = ans;
-            while (temp != null) {
-                out.print(temp.data + " ");
-                temp = temp.next;
-            }out.println();
-        }
-        out.close();
+            String[] arr = br.readLine().trim().split(" ");
+            int k = Integer.parseInt(br.readLine().trim());
 
+            DLLNode head = new DLLNode(Integer.parseInt(arr[0]));
+            DLLNode tail = head;
+
+            for (int i = 1; i < arr.length; i++) {
+                push(tail, Integer.parseInt(arr[i]));
+                tail = tail.next;
+            }
+
+            Solution obj = new Solution();
+            DLLNode sorted_head = obj.sortAKSortedDLL(head, k);
+            printList(sorted_head);
+        }
     }
 }
 
 // } Driver Code Ends
 
 
-//User function Template for Java
+// User function Template for Java
 class Solution {
-    public Node sortAKSortedDLL(Node head, int k) {
-        PriorityQueue<Node> pq = new PriorityQueue<>((a,b) -> a.data - b.data );
-        
-        Node h = new Node(-1);
-        
-        Node t = head , t1 = h;
-        Node lastsorted = null;
-        while( t != null ){
-            pq.add( t );
-            if( pq.size () > k) {
-                lastsorted = pq.poll();
-                lastsorted.prev = t1;
-                t1.next = lastsorted;
-                t1 = t1.next;
+    public DLLNode sortAKSortedDLL(DLLNode head, int k) {
+        if(head==null||head.next==null) return head;
+        PriorityQueue<DLLNode> minHeap=new PriorityQueue<>((a,b)->a.data-b.data);
+        DLLNode newHead=null,lastSorted=null;
+        DLLNode current=head;
+        for(int i=0;i<=k&&current!=null;i++)
+        {
+            minHeap.add(current);
+            current=current.next;
+        }
+        while(!minHeap.isEmpty())
+        {
+            DLLNode node=minHeap.poll();
+            if(newHead==null)
+            {
+                newHead=node;
+                newHead.prev=null;
+                lastSorted=newHead;
             }
-            t = t.next;
+            else{
+                lastSorted.next=node;
+                node.prev=lastSorted;
+                lastSorted=node;
+            }
+            if (current != null) {
+                minHeap.add(current);
+                current = current.next;
+            }
         }
-        while( pq.size() > 0 ){
-                lastsorted = pq.poll();
-                lastsorted.prev = t1;
-                t1.next = lastsorted;
-                t1 = t1.next;
+        if (lastSorted != null) {
+            lastSorted.next = null;
         }
-        lastsorted.next = null;
-        h = h.next;
-        h.prev = null;
-        return h;
+
+        return newHead;
     }
 }
