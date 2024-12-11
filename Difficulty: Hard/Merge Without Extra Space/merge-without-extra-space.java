@@ -36,6 +36,8 @@ public class Main {
 
 // } Driver Code Ends
 
+
+
 class Solution {
     // Function to merge the arrays.
     public void mergeArrays(int a[], int b[]) {
